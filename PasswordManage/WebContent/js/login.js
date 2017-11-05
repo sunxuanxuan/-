@@ -1,0 +1,29 @@
+/**
+ * 
+ */
+$(document).ready(function(){
+	$("#inner").fadeIn("slow");
+	$("header").slideDown();
+	$("#password").focus(function(){
+		$(this).attr("value","");
+		$(this).attr("type","password");
+		$(this).css("color","#000000");
+	})
+	$("#password").blur(function(){
+		if($(this).val()==""){
+			$(this).attr("type","text");
+			$(this).attr("value","密码");
+			$(this).css("color","#C0C0C0");
+		}
+	})
+	$("#account").focus(function(){
+		$(this).attr("value","");
+		$(this).css("color","#000000");
+	})
+	$("#account").blur(function(){
+		if($(this).val()==""){
+			$(this).attr("value","账号/邮箱/手机号");
+			$(this).css("color","#C0C0C0");
+		}
+	})
+})
