@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@taglib uri="/struts-tags" prefix="s"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,6 +9,35 @@
 <link href="css/firstpage.css"rel="stylesheet"type="text/css">
 <script type="text/javascript"src="js/jquery.js"></script>
 <script type="text/javascript">
+$(document).ready(function(){
+	var name;
+	name="${user.getName()}";
+	if(name!=""){
+	$("#las").html("<span>欢迎您："+name+"</span><span>/</span><a href=\"login_logout.action\">注销</a>");
+	}
+});
+function jump(){
+	var name;
+	name="${user.getName()}";
+	if(name!=""){
+		var myForm=document.createElement("form");
+		myForm.method="post";
+		myForm.action="firstPage_jump";
+		var myInput1=document.createElement("input");
+		myInput1.setAttribute("name", "account");
+		myInput1.setAttribute("value","${user.getAccount()}");
+		myForm.appendChild(myInput1);
+		var myInput2=document.createElement("input");
+		myInput2.setAttribute("name", "password");
+		myInput2.setAttribute("value","${user.getPassword()}");
+		myForm.appendChild(myInput2);
+		document.body.appendChild(myForm);
+		myForm.submit();
+		document.body.removeChild(myForm);
+	}else{
+		alert("请先登录！");
+	}
+}
 </script>
 <title>首页</title>
 </head>
@@ -23,11 +53,16 @@
      </div>
      <div id="h_list">
        <ul>
-         <li><a href="#">运维管理</a></li>
+         <li><a href="javascript:jump()">运维管理</a></li>
          <li><a href="#">大数据</a></li>
          <li><a href="#">监控管理</a></li>
          <li><a href="#">系统管理</a></li>
        </ul>
+     </div>
+     <div id="las">
+       <a href="Login.jsp">登录</a>
+       <span>/</span>
+       <a href="Register.jsp">注册</a>
      </div>
    </nav>
   </header>

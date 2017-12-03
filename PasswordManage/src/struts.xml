@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+"-//Apache Software Foundation//DTD Struts Configuration 2.1.7//EN"
+"http://struts.apache.org/dtds/struts-2.1.7.dtd">
+
+<struts>
+  <package name="PasswordManage" extends="json-default" namespace="/">
+    
+    <!-- 登录页的Action -->
+    <action name="login_*" class="loginAction" method="{1}">
+      <result name="success">/FirstPage.jsp</result>
+      <result name="input">/Login.jsp</result>
+      <result name="logout">/FirstPage.jsp</result>
+      <result name="register">/Register.jsp</result>
+    </action>
+    
+    <!-- 首页的Action -->
+    <action name="firstPage_*" class="firstPageAction" method="{1}">
+      <result name="jump_success">/Management.jsp</result>
+    </action>
+
+    <!-- 管理页的Action -->
+    <action name="manage_*" class="manageAction" method="{1}">
+      <result name="count" type="json">
+         <param name="root">result</param>
+      </result>
+      <result name="show" type="json">
+         <param name="root">result</param>
+      </result>
+      <result name="add" type="json">
+         <param name="root">result</param>
+      </result>
+      <result name="delete" type="json">
+         <param name="root">result</param>
+      </result>
+      <result name="update" type="json">
+         <param name="root">result</param>
+      </result>
+    </action>
+    
+    
+  </package>
+</struts>

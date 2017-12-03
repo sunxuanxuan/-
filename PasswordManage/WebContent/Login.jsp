@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@taglib uri="/struts-tags" prefix="s"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -20,7 +21,7 @@
       </div>
       <ul>
         <li><a href="#">设置</a></li>
-        <li><a href="#">退出</a></li>
+        <li><a href="FirstPage.jsp">退出</a></li>
       </ul>
     </nav>
   </header>
@@ -34,15 +35,19 @@
      </div>
      <div id="login">
        <p>密码登录</p>
-       <form action="">
+       <form action="login_login" method="post">
          <input id="account" type="text" value="账号/邮箱/手机号" name="account"/>
          <input id="password"type="text" value="密码" name="password">
          <button type="submit">登录</button>
          <br/>
          <br/>
          <span><a href="#">忘记密码</a></span>
-         <span><a href="#">免费注册</a></span>
+         <span><a href="Register.jsp">免费注册</a></span>
        </form>
+       <br/>
+       <div>
+         <span class="errorMessage"><s:property value="#error"/></span>
+       </div>
      </div>
   </div>
   

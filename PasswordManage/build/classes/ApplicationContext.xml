@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xmlns:aop="http://www.springframework.org/schema/aop"
+        xmlns:tx="http://www.springframework.org/schema/tx"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd">
+    
+<!-- 配置sessionFactory --> 
+<context:property-placeholder location="classpath:jdbc.properties"/>
+ 
+<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+      <property name="driverClass" value="${jdbc.driverClass}"></property>
+      <property name="jdbcUrl" value="${jdbc.url}"></property>
+      <property name="user" value="${jdbc.username}"></property>
+      <property name="password" value="${jdbc.password}"></property>
+</bean> 
+ 
+<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+       <property name="dataSource"  ref="dataSource"></property>
+       <property name="mappingResources">
+            <list>
+               <value>com/PasswordManage/domain/Pm_user.hbm.xml</value>
+               <value>com/PasswordManage/domain/Pm_item.hbm.xml</value>
+               <value>com/PasswordManage/domain/Jurisdiction.hbm.xml</value>
+               <value>com/PasswordManage/domain/Operationlog.hbm.xml</value>
+            </list>
+       </property>
+       <property name="hibernateProperties">
+            <props>
+                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+                 <prop key="hibernate.show_sql">true</prop>
+                 <prop key="hibernate.format_sql">true</prop>
+                 <prop key="hibernate.hbm2ddl.auto">update</prop>
+            </props>
+       </property>
+ </bean>
+ 
+<!-- 配置Action -->
+<bean id="loginAction" class="com.PasswordManage.action.LoginAction" scope="prototype">
+   <property name="loginService" ref="loginService"></property>
+</bean>   
+<bean id="firstPageAction" class="com.PasswordManage.action.FirstPageAction" scope="prototype">
+   <property name="firstPageService" ref="firstPageService"></property>
+</bean>
+<bean id="manageAction" class="com.PasswordManage.action.ManageAction" scope="prototype">
+   <property name="manageService" ref="manageService"></property>
+</bean>
+
+<!-- 配置Service -->
+<bean id="loginService" class="com.PasswordManage.service.LoginServiceImpl">
+   <property name="loginDao" ref="loginDao"></property>
+</bean>
+<bean id="firstPageService" class="com.PasswordManage.service.FirstPageServiceImpl">
+   <property name="firstPageDao" ref="firstPageDao"></property>
+</bean>
+<bean id="manageService" class="com.PasswordManage.service.ManageServiceImpl">
+   <property name="manageDao" ref="manageDao"></property>
+</bean>
+
+<!-- 配置Dao -->
+<bean id="loginDao" class="com.PasswordManage.dao.LoginDaoImpl">
+   <property name="sessionFactory" ref="sessionFactory"></property>
+</bean>
+<bean id="firstPageDao" class="com.PasswordManage.dao.FirstPageDaoImpl">
+   <property name="sessionFactory" ref="sessionFactory"></property>
+</bean>
+<bean id="manageDao" class="com.PasswordManage.dao.ManageDaoImpl">
+   <property name="sessionFactory" ref="sessionFactory"></property>
+</bean>
+
+<!-- 配置事物管理器 -->
+<bean id="txManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+   <property name="sessionFactory" ref="sessionFactory"></property>
+</bean>
+ 
+<!-- 开启注解事务 -->
+<tx:annotation-driven  transaction-manager="txManager"/>
+</beans>

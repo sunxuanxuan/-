@@ -72,6 +72,18 @@ nav{
     color:#66B3FF;
 	box-shadow: 0px -3px 0 #66B3FF inset;
 }
+#las{
+	position:absolute;
+	right:20px;
+	line-height:60px;
+	color:#fff;
+}
+#las a{
+	display:inline-block;
+}
+#las a:hover{
+	color:#66B3FF;
+}
 #inner{
    height: 550px;
 }

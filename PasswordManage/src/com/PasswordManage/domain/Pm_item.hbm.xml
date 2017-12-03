@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2017-11-30 16:56:52 by Hibernate Tools 3.5.0.Final -->
+<hibernate-mapping>
+    <class name="com.PasswordManage.domain.Pm_item" table="PM_ITEM">
+        <id name="id" type="java.lang.String">
+            <column name="ID" />
+            <generator class="uuid" />
+        </id>
+        <property name="type1" type="java.lang.String">
+            <column name="TYPE1" />
+        </property>
+        <property name="username" type="java.lang.String">
+            <column name="USERNAME" />
+        </property>
+        <property name="password" type="java.lang.String">
+            <column name="PASSWORD" />
+        </property>
+        <property name="create_date" type="java.util.Date">
+            <column name="CREATE_DATE" />
+        </property>
+        <property name="password_expired_date" type="java.util.Date">
+            <column name="PASSWORD_EXPIRED_DATE" />
+        </property>
+        <property name="type2" type="java.lang.String">
+            <column name="TYPE2" />
+        </property>
+        <property name="password_lifelength" type="int">
+            <column name="PASSWORD_LIFELENGTH" />
+        </property>
+        <property name="password_status" type="java.lang.String">
+            <column name="PASSWORD_STATUS" />
+        </property>
+        <property name="item_name" type="java.lang.String">
+            <column name="ITEM_NAME" />
+        </property>
+        <many-to-one name="creator" class="com.PasswordManage.domain.Pm_user" fetch="join" lazy="false">
+            <column name="CREATOR" />
+        </many-to-one>
+        <property name="ip_address" type="java.lang.String">
+            <column name="IP_ADDRESS" />
+        </property>
+        <property name="ssh_port" type="int">
+            <column name="SSH_PORT" />
+        </property>
+    </class>
+</hibernate-mapping>
