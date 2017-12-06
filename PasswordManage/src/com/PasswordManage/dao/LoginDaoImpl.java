@@ -30,6 +30,7 @@ public class LoginDaoImpl extends HibernateDaoSupport implements LoginDao {
 	@Override
 	public String addUser(Verification verification, String name) {
 		// TODO Auto-generated method stub
+		
 		Pm_user pm_user=new Pm_user();
 		String sql="from Pm_user where account=?";
 		List list=this.getHibernateTemplate().find(sql,verification.getAccount());
@@ -44,7 +45,7 @@ public class LoginDaoImpl extends HibernateDaoSupport implements LoginDao {
 		Jurisdiction jurisdiction=(Jurisdiction) this.getHibernateTemplate().find("from Jurisdiction where name=?","∆’Õ®”√ªß").get(0);
 		pm_user.setJurisdiction(jurisdiction);
 		this.getHibernateTemplate().save(pm_user);
-		return "register_success";
-	}
+	    return "register_success";
+	   }
 	}
 }

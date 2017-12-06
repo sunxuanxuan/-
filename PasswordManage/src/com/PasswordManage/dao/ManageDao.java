@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.PasswordManage.domain.AddHelp;
+import com.PasswordManage.domain.Operationlog;
 import com.PasswordManage.domain.Pm_item;
 import com.PasswordManage.domain.Pm_user;
 
@@ -22,5 +23,11 @@ public interface ManageDao {
 	Pm_item findPm_item(AddHelp addhelp);
 
 	void update(Pm_item pm_item);
+
+	List<Pm_item> batch_out(List<Pm_item> list0);
+
+	void saveOperationlog(Operationlog operationlog);
+
+	void batch_in(List<Pm_item> pm_items);
 
 }

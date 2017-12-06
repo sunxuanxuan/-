@@ -1,12 +1,25 @@
 package com.PasswordManage.service;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.security.KeyStore.PrivateKeyEntry;
 import java.sql.DriverManager;
+import java.text.DateFormat;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -15,11 +28,28 @@ import java.util.Properties;
 
 import javax.management.RuntimeErrorException;
 
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFDataFormat;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.tomcat.dbcp.dbcp.datasources.SharedPoolDataSource;
 import org.aspectj.weaver.AjAttribute.PrivilegedAttribute;
+import org.aspectj.weaver.reflect.ReflectionWorld;
+import org.eclipse.jdt.internal.compiler.tool.EclipseCompiler;
 import org.springframework.jdbc.support.incrementer.HsqlMaxValueIncrementer;
 
 import com.PasswordManage.dao.ManageDao;
 import com.PasswordManage.domain.AddHelp;
+import com.PasswordManage.domain.Operationlog;
 import com.PasswordManage.domain.Pm_item;
 import com.PasswordManage.domain.Pm_user;
 import com.jcraft.jsch.Channel;
@@ -37,7 +67,7 @@ import net.sf.json.JSONObject;
 public class ManageServiceImpl implements ManageService {
 
 	private ManageDao manageDao;
-	private String username;
+	/*private String username;
 	private String password;
 	private String ip_address;
 	private int ssh_port;
@@ -47,7 +77,7 @@ public class ManageServiceImpl implements ManageService {
 	//数据库修改所用参数;
 	private String driverClass;
 	private String url;
-	private Connection connection;
+	private Connection connection;*/
 
 	public ManageDao getManageDao() {
 		return manageDao;
@@ -192,6 +222,177 @@ public class ManageServiceImpl implements ManageService {
 		}*/
 		pm_item.setPassword(addhelp.getPassword());
 		manageDao.update(pm_item);
+	}
+
+	@Override
+	public void batch_out(String batch_out) {
+		// TODO Auto-generated method stub
+		JSONArray jsonArray=JSONArray.fromObject(batch_out);
+		List<Pm_item> list0=new ArrayList<Pm_item>();
+		for(int i=0;i<jsonArray.size();i++){
+			JSONObject jsonObject=jsonArray.getJSONObject(i);
+			list0.add((Pm_item) JSONObject.toBean(jsonObject,Pm_item.class));
+		}
+		List<Pm_item> list=manageDao.batch_out(list0);
+		String type1=list.get(0).getType1();
+		String type=type1.substring(0, type1.indexOf("密"));
+		HSSFWorkbook wb=new HSSFWorkbook();
+		HSSFSheet sheet=wb.createSheet();
+		HSSFRow row=sheet.createRow(0);
+		HSSFCell cell=row.createCell(0);
+		//写入表头;
+		cell.setCellValue(type+"类型");
+		cell=row.createCell(1);
+		cell.setCellValue(type+"名");
+		cell=row.createCell(2);
+		cell.setCellValue("用户名");
+		cell=row.createCell(3);
+		cell.setCellValue("密码");
+		cell=row.createCell(4);
+		cell.setCellValue("创建者");
+		cell=row.createCell(5);
+		cell.setCellValue("密码有效期");
+		cell=row.createCell(6);
+		cell.setCellValue("密码到期时间");
+		cell=row.createCell(7);
+		cell.setCellValue("记录创建时间");
+		cell=row.createCell(8);
+		cell.setCellValue("密码状态");
+		if(type.equals("主机")){
+			cell=row.createCell(9);
+			cell.setCellValue("IP地址");
+			cell=row.createCell(10);
+			cell.setCellValue("ssh端口");
+		}
+		//写入记录;
+		for(int i=0;i<list.size();i++){
+			Pm_item pm_item=list.get(i);
+			row=sheet.createRow(i+1);
+			cell=row.createCell(0);
+			cell.setCellValue(pm_item.getType2());
+			cell=row.createCell(1);
+			cell.setCellValue(pm_item.getItem_name());
+			cell=row.createCell(2);
+			cell.setCellValue(pm_item.getUsername());
+			cell=row.createCell(3);
+			cell.setCellValue(pm_item.getPassword());
+			cell=row.createCell(4);
+			cell.setCellValue(pm_item.getCreator().getJurisdiction().getName());
+			cell=row.createCell(5);
+			cell.setCellValue(pm_item.getPassword_lifelength());
+			cell=row.createCell(8);
+			cell.setCellValue(pm_item.getPassword_status());
+			if(type.equals("主机")){
+				cell=row.createCell(9);
+				cell.setCellValue(pm_item.getIp_address());
+				cell=row.createCell(10);
+				cell.setCellValue(pm_item.getSsh_port());
+			} 
+			String formatDate=null;
+			DateFormat dFormat=new SimpleDateFormat("yyyy-MM-dd");
+			formatDate=dFormat.format(pm_item.getPassword_expired_date());
+			String s=formatDate.replace("-","/");
+			cell=row.createCell(6);
+			cell.setCellValue(s);
+			formatDate=dFormat.format(pm_item.getCreate_date());
+			s=formatDate.replace("-","/");
+			cell=row.createCell(7);
+			cell.setCellValue(s);
+		}
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		try{
+			wb.write(os);
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+		byte [] content=os.toByteArray();
+		File file=new File("Batch_out.xls");
+		OutputStream fos=null;
+		try{
+			fos=new FileOutputStream(file);
+			
+			fos.write(content);
+			os.close();
+			fos.close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		//操作日志记录;
+		for(int i=0;i<list.size();i++){
+			Operationlog operationlog=new Operationlog();
+			operationlog.setOperation_date(new Date());
+			operationlog.setOperation_object(list.get(i).getItem_name());
+			operationlog.setOperation_type("批量导出");
+			operationlog.setOperator("超级管理员");
+			manageDao.saveOperationlog(operationlog);
+		}
+	}
+
+	@Override
+	public void batch_in(File destFile,String batch_inFileName){
+		// TODO Auto-generated method stub
+		try{
+	        List<Pm_item> pm_items=new ArrayList<Pm_item>();
+			FileInputStream inputStream=new FileInputStream(destFile);
+		    Workbook wb=null;
+		    if(batch_inFileName.endsWith("xls")){
+		    	wb=new HSSFWorkbook(inputStream);
+		    }else if(batch_inFileName.endsWith("xlsx")){
+		    	wb=new XSSFWorkbook(inputStream);
+		    }
+		    Sheet sheet=wb.getSheetAt(0);
+		    int curR=0;
+		    String type1 = null;
+		    for(Row row:sheet){
+		    	if(curR==0){
+		    		curR++;
+		    		Cell firstCell=row.getCell(0);
+		    		type1=firstCell.toString().substring(0,firstCell.toString().indexOf("类"))+"密码";
+		    		continue;
+		    	}
+		    	if(row.getCell(0).toString().equals("")){
+		    		break;
+		    	}
+		       Pm_item pm_item=new Pm_item();
+		       Cell cell=row.getCell(0);
+		       pm_item.setType1(type1);
+		       pm_item.setType2(cell.toString());
+		       cell=row.getCell(1);
+		       pm_item.setItem_name(cell.toString());
+		       cell=row.getCell(2);
+		       pm_item.setUsername(cell.toString());
+		       cell=row.getCell(3);
+		       pm_item.setPassword(cell.toString());
+		       cell=row.getCell(4);
+		       pm_item.setCreator(manageDao.findUser(cell.toString()));
+		       cell=row.getCell(5);
+		       pm_item.setPassword_lifelength((int)cell.getNumericCellValue());
+		       cell=row.getCell(6);
+		       if(cell.getCellTypeEnum()==CellType.NUMERIC){
+		    	   pm_item.setPassword_expired_date(cell.getDateCellValue());
+		       }else{
+		    	   SimpleDateFormat sff=new SimpleDateFormat("yy-MM-dd");
+		    	   String ss=cell.toString().replace("/","-");
+		    	   Date date=sff.parse(ss);
+		    	   pm_item.setPassword_expired_date(date);
+		       }
+		       cell=row.getCell(7);
+		       pm_item.setCreate_date(new Date());
+		       cell=row.getCell(8);
+		       pm_item.setPassword_status(cell.toString());
+		       if(type1.equals("主机密码")){
+		    	   cell=row.getCell(9);
+		    	   pm_item.setIp_address(cell.toString());
+		    	   cell=row.getCell(10);
+		    	   pm_item.setSsh_port((int)cell.getNumericCellValue());
+		       }
+		       pm_items.add(pm_item);
+		    }
+		    inputStream.close();
+		    manageDao.batch_in(pm_items);
+	  }catch(Exception e){
+		  System.out.println(e.getMessage());
+	  }
 	}
 	
 }

@@ -87,7 +87,7 @@ function zTreeOnClick(event, treeId, treeNode){
 				$("#b_body").append(show);
 				var operation=$("<div id=\"operation\"></div>");
 				var obj=JSON.stringify(data);
-/*函数传参问题！*/  var ul=$("<ul><li><a id=\"add\" href=\"javascript:show_add()\">添加</a></li><li><a id=\"update\" href=\"javascript:void(0)\" onclick='show_update("+obj+")'>修改</a></li><li><a id=\"delete\" href=\"javascript:void(0)\" onclick='show_delete("+obj+")'>删除</a></li></ul>");
+/*函数传参问题！*/  var ul=$("<ul><li><a id=\"add\" href=\"javascript:show_add()\">添加</a></li><li><a id=\"update\" href=\"javascript:void(0)\" onclick='show_update("+obj+")'>修改</a></li><li><a id=\"delete\" href=\"javascript:void(0)\" onclick='show_delete("+obj+")'>删除</a></li><li><a id=\"batch_in\"href=\"javascript:batch_in()\">批量导入</a></li><li><a id=\"batch_out\"href=\"javascript:void(0)\" onclick='batch_out("+obj+")'>批量导出</a></li></ul>");
 				operation.append(ul);
 				$("#show").append(operation);
 				var show_table=$("<table id=\"show_table\"></table>");
@@ -119,7 +119,7 @@ function zTreeOnClick(event, treeId, treeNode){
 				th_td8.html("创建日期");
 				show_table_th.append(th_td8);
 				show_table.append(show_table_th);
-				for(var i=0;i<parseInt(data["num"]);i++){
+				/*for(var i=0;i<parseInt(data["num"]);i++){
 					if(i>7){
 						break;
 					}
@@ -166,8 +166,18 @@ function zTreeOnClick(event, treeId, treeNode){
 					td8.html(data[a].create_date);
 					tr.append(td8);
 					show_table.append(tr);
-				}
+				}*/
 				$("#show").append(show_table);
+				var fathernode=treeNode.getParentNode().name;
+				show_by_page(data,1,fathernode);
+				if(fathernode=="主机密码"){
+				var change_page=$("<p>当前页数为<span id='curpage'>1</span>/<span id='totalpage'>1</span> ,<a id='last_page' href='javascript:lastpage("+obj+",\"主机密码\")'>上一页</a>/<a id='next_page' href='javascript:nextpage("+obj+",\"主机密码\")'>下一页</a></p>");
+				}else if(fathernode=="数据库密码"){
+			    var change_page=$("<p>当前页数为<span id='curpage'>1</span>/<span id='totalpage'>1</span> ,<a id='last_page' href='javascript:lastpage("+obj+",\"数据库密码\")'>上一页</a>/<a id='next_page' href='javascript:nextpage("+obj+",\"数据库密码\")'>下一页</a></p>");	
+				}
+				$("#show").append(change_page);
+				var tp=parseInt(parseInt(data["num"])/7+1);
+				$("#totalpage").html(tp.toString());
 		    },
 		    error:function(e){
 		    	 alert("Error!");
@@ -297,7 +307,7 @@ function show_add(){
     $("#show").append(back);
   
 }
-//添加操作的数据提交；
+//添加操作的数据提交;
 function add_submit(){
 	
 	var title=$("#title").html();
@@ -350,19 +360,19 @@ function add_submit(){
 		}
 	})
 }
-//判断IP地址格式是否合法；
+//判断IP地址格式是否合法;
 function isIp(ip){
 	var reg =  /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/     
 	return reg.test(ip);    
 }
-//添加操作返回；
+//添加操作返回;
 function add_back(){
 	var zTree=$.fn.zTree.getZTreeObj("ztree1");
 	var node=zTree.getNodeByParam("name",$("#type2 option:selected").val());
     zTree.selectNode(node);
     zTree.setting.callback.onClick(null,zTree.setting.treeId,node);
 }
-//获取勾选了的表格行；
+//获取勾选了的表格行;
 function getCheckedBoxes(){
 	var checkBoxes=$("#show_table").find("input[type='checkbox']");
 	var checkedBoxes=new Array();
@@ -374,7 +384,7 @@ function getCheckedBoxes(){
 	});
 	return checkedBoxes;
 }
-//删除操作；
+//删除操作;
 function show_delete(data){
 	var checkedBoxes=getCheckedBoxes();
 	if(checkedBoxes.length==0){
@@ -414,4 +424,284 @@ function show_delete(data){
 			}
 		})
 	}
+}
+//update操作;
+function show_update(data){
+	var checkedBoxes=getCheckedBoxes();
+	if(checkedBoxes.length==0){
+		alert("未勾选任何记录!");
+		return;
+	}else if(checkedBoxes.length>1){
+		alert("选项太多，一次请勾选一条记录!");
+		return;
+	}else{
+		var id=checkedBoxes[0].attr("id");
+		var item=data["item_"+id.substr(9, 1)];
+		show_add();
+		var title=$("#title").html();
+		var parent=title.substring(0,title.indexOf("添"));
+		$("#title").html(parent+"修改");
+		var divs=$("#show").find(".add_div");
+		divs.each(function(){
+			var div_id=$(this).attr("id");
+			if(div_id=="type2"){
+				var options=$(this).find("option");
+				options.each(function(){
+					if($(this).attr("value")==item.type2){
+						$(this).attr("selected","true");
+					}else{
+						$(this).attr("disabled","disabled");
+					}
+				});
+			}else if(div_id=="password"||div_id=="confirm_password"){
+			    var div_input=$(this).find("input");
+			    div_input.attr("value",item.password);
+			}else if(div_id=="creator"){
+				var div_input=$(this).find("input");
+				div_input.attr("value",item[div_id].jurisdiction.name);
+				div_input.attr("disabled","disabled");
+			}else if(div_id=="password_expired_date"){
+				var div_input=$(this).find("input");
+				var date=item[div_id];
+				div_input.attr("value",date.substr(0, date.indexOf("T")));
+				div_input.attr("disabled","disabled");
+			}else{
+				var div_input=$(this).find("input");
+				div_input.attr("value",item[div_id]);
+				div_input.attr("disabled","disabled");
+			}
+		});
+		var button=$("#show").find("#submit");
+		button.attr("onclick","javascript:update_submit()");
+	}
+}
+function update_submit(){
+	if($("#password input").val()!=$("#confirm_password input").val()){
+		alert("两次密码输入不一致,请重新输入！");
+		return;
+	}
+	var title=$("#title").html();
+	var type1=title.substring(0,title.indexOf("修"));
+	$.ajax({
+		type:"post",
+		url:"manage_update.action",
+		data:{
+			"type1":type1,
+			"type2":$("#type2 option:selected").val(),
+			"username":$("#username input").val(),
+			"password":$("#password input").val(),
+			"creator":$("#creator input").val(),
+			"item_name":$("#item_name input").val(),
+			"password_lifelength":$("#password_lifelength input").val(),
+			"password_expired_date":$("#password_expired_date input").val(),
+			"ip_address":$("#ip_address input").val(),
+			"ssh_port":$("#ssh_port input").val()
+		},
+		dataType: "json",
+		success:function(data){
+			if(data["result"]=="success"){
+				alert("修改成功！");
+				var zTree=$.fn.zTree.getZTreeObj("ztree1");
+				var node=zTree.getNodeByParam("name",$("#type2 option:selected").val());
+			    zTree.selectNode(node);
+			    zTree.setting.callback.onClick(null,zTree.setting.treeId,node);
+			}
+		},
+		error:function(e){
+			alert("Error!");
+		}
+	})
+}
+//批量导出操作;
+function batch_out(data){
+	var checkedBoxes=getCheckedBoxes();
+	if(checkedBoxes.length==0){
+		alert("未勾选任何记录！")
+		return;
+	}
+	var checkedBoxes_id=new Array();
+	var item_list=new Array();
+	for(var i=0;i<checkedBoxes.length;i++){
+		var id=checkedBoxes[i].attr("id");
+		checkedBoxes_id[i]=id.substr(9, 1);
+	}
+	for(var i=0;i<checkedBoxes_id.length;i++){
+		var a="item_"+checkedBoxes_id[i];
+		item_list[i]=data[a];
+	}
+	var batch_out=JSON.stringify(item_list);
+	if($("#batch_out_form").length==0){
+	   var form=$("<form method='post' action='manage_batch_out' id='batch_out_form'></form>");
+	   var input=$("<input type='text' name='batch_out'/>");
+	   input.attr("value",batch_out);
+	   form.append(input);
+	   $("#show").append(form);
+	}else{
+	   $("#batch_out_form").css("display","block");
+	}
+	form.submit();
+	$("#batch_out_form").css("display","none");
+}
+//批量导入;
+function batch_in(){
+	if($("#mask").length==0){
+	  var mask=$("<div id=\"mask\"></div>");
+	  var div_iput=$("<div id=\"div_input\"></div>");
+	  var body_height=$(document.body).height();
+	  var body_width=$(document.body).width();
+	  var left=(body_width-300)/2;
+	  var top=(body_height-150)/2;
+	  div_iput.css("left",left);
+	  div_iput.css("top",top);
+	  var form=$("<form id='batch_in_form'></form>");
+	  var input=$("<span><input type=\"file\" name=\"batch_in\" id=\"file_input\"/></span>");
+	  var submit=$("<button id='batch_in_submit' type='button' onclick='javascript:file_submit()'>上传</button>")
+	  var back=$("<button id='batch_in_back' type='button' onclick='javascript:file_back()'>返回</button>");
+	  form.append(back);
+	  form.append(input);
+	  form.append(submit);
+	  div_iput.append(form);
+	  $("#body").append(mask);
+	  $("#body").append(div_iput);
+	}else{
+		$("#mask").css("display","block");
+		$("#div_input").css("display","block");
+	}
+}
+function file_submit(){
+	if(!$("#file_input").val().length){
+		var batch_in_error=$("<span id='batch_in_error'>还未选择文件</span>");
+		$("#div_input").append(batch_in_error);
+	}else{
+		var aa=new FormData($("#batch_in_form")[0]);
+		$.ajax({
+			url:"manage_batch_in",
+			type:"post",
+			data:aa,
+	        async: false,  
+	        cache: false,
+	        contentType: false,
+	        processData: false, 
+			success: function(data){
+				if(data["result"]=="success"){
+					$("#mask").css("display","none");
+					$("#div_input").css("display","none");
+					alert("上传成功！");
+					var zTree=$.fn.zTree.getZTreeObj("ztree1");
+					var node=zTree.getNodeByParam("name","linux主机");
+				    zTree.selectNode(node);
+				    zTree.setting.callback.onClick(null,zTree.setting.treeId,node);
+				}
+			},
+			error:function(e){
+				alert("Error!");
+			}
+		})
+	}
+}
+function file_back(){
+	$("#mask").css("display","none");
+	$("#div_input").css("display","none");
+}
+//翻页;
+function show_by_page(data,curpage,fathernode){
+	for(var i=(curpage-1)*7;i<parseInt(data["num"]);i++){
+		if(i==curpage*7){
+			break;
+		}
+		var a="item_"+i;
+		var tr=$("<tr></tr>");
+		if(i%2==0){
+			tr.attr("class","even");
+		}else{
+			tr.attr("class","odd");
+		}
+		var td1=$("<td class=\"td1\"></td>");
+		var checkbox=$("<input type=\"checkbox\"/>");
+		checkbox.attr("id","checkbox_"+i);
+		td1.append(checkbox);
+		tr.append(td1);
+		var td2=$("<td class=\"td2\"></td>");
+		td2.html(data[a].item_name);
+		tr.append(td2);
+		if(fathernode=="主机密码"){
+		var td3=$("<td class=\"td3\"></td>");
+		td3.html(data[a].ip_address);
+		tr.append(td3);
+		}
+		var td4=$("<td class=\"td4\"></td>");
+		td4.html(data[a].username);
+		tr.append(td4);
+		var td5=$("<td class=\"td5\"></td>");
+		var str=data[a].password.substr(0,1);
+		for(var k=0;k<data[a].password.length-1;k++){
+			str+="*";
+		}
+		td5.html(str); 
+		tr.append(td5);
+		var td6=$("<td class=\"td6\"></td>");
+		td6.html(data[a].password_status);
+		if(data[a].password_status=="过期"){
+			td6.css("color","red");
+		}
+		tr.append(td6);
+		var td7=$("<td class=\"td7\"></td>");
+		td7.html(data[a].creator.jurisdiction.name);
+		tr.append(td7);
+		var td8=$("<td class=\"td8\"></td>");
+		td8.html(data[a].create_date);
+		tr.append(td8);
+		$("#show_table").append(tr);
+	}
+}
+function lastpage(data,fathernode){
+    var curpage=parseInt($("#curpage").html());
+	var totalpage=parseInt($("#totalpage").html());
+	if(curpage!=1){
+		curpage--;
+		emptytd(fathernode);
+		show_by_page(data, curpage, fathernode);
+		$("#curpage").html(curpage.toString());
+	}
+}
+function nextpage(data,fathernode){
+	var curpage=parseInt($("#curpage").html());
+	var totalpage=parseInt($("#totalpage").html());
+	if(curpage!=totalpage){
+		curpage++;
+		emptytd(fathernode);
+		show_by_page(data, curpage, fathernode);
+		$("#curpage").html(curpage.toString());
+	}
+}
+function emptytd(fathernode){
+	$("#show_table").empty();
+	var show_table_th=$("<tr id=\"show_table_th\"></tr>");
+	var th_td1=$("<td class=\"td1\"></td>");
+	th_td1.html("<input type=\"checkbox\" disabled=\"true\"/>");
+	show_table_th.append(th_td1);
+	var th_td2=$("<td class=\"td2\"></td>");
+	th_td2.html(fathernode.substring(0,fathernode.indexOf("密"))+"名");
+	show_table_th.append(th_td2);
+	if(fathernode=="主机密码"){
+	var th_td3=$("<td class=\"td3\"></td>");
+	th_td3.html("IP地址");
+	show_table_th.append(th_td3);
+	}
+	var th_td4=$("<td class=\"td4\"></td>");
+	th_td4.html("用户名");
+	show_table_th.append(th_td4);
+	var th_td5=$("<td class=\"td5\"></td>");
+	th_td5.html("密码");
+	show_table_th.append(th_td5);
+	var th_td6=$("<td class=\"td6\"></td>");
+	th_td6.html("密码状态");
+	show_table_th.append(th_td6);
+	var th_td7=$("<td class=\"td7\"></td>");
+	th_td7.html("创建人");
+	show_table_th.append(th_td7);
+	var th_td8=$("<td class=\"td8\"></td>");
+	th_td8.html("创建日期");
+	show_table_th.append(th_td8);
+	$("#show_table").append(show_table_th);
 }

@@ -1,5 +1,7 @@
 package com.PasswordManage.service;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -17,5 +19,9 @@ public interface ManageService {
 	void delete(String delete_list);
 
 	void update(AddHelp addhelp);
+
+	void batch_out(String batch_out);
+
+	void batch_in(File destFile,String batch_inFileName);
 
 }

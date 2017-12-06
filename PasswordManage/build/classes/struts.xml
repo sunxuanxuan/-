@@ -36,6 +36,15 @@
       <result name="update" type="json">
          <param name="root">result</param>
       </result>
+      <result name="batch_out" type="stream">
+         <param name="inputName">inputStream</param>
+         <param name="contentDisposition">attachment;fileName="Batch_out.xls"</param>
+         <param name="contentType">application/vnd.ms-excel</param>
+         <param name="bufferSize">1024</param>
+      </result>
+      <result name="batch_in" type="json">
+         <param name="root">result</param>
+      </result>
     </action>
     
     

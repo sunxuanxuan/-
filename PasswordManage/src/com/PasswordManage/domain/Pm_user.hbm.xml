@@ -17,7 +17,7 @@
         <property name="name" type="java.lang.String">
             <column name="NAME" />
         </property>
-        <many-to-one name="jurisdiction" class="com.PasswordManage.domain.Jurisdiction" fetch="join">
+        <many-to-one name="jurisdiction" class="com.PasswordManage.domain.Jurisdiction" fetch="join" lazy="false">
             <column name="JURISDICTION" />
         </many-to-one>
         <property name="register_date" type="java.util.Date">

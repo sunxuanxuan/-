@@ -1,11 +1,15 @@
 package com.PasswordManage.dao;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
+import org.apache.poi.poifs.filesystem.OPOIFSDocument;
 import org.omg.CORBA.PUBLIC_MEMBER;
 import org.omg.PortableInterceptor.INACTIVE;
 import org.omg.PortableServer.ThreadPolicyOperations;
@@ -68,6 +72,12 @@ public class ManageDaoImpl extends HibernateDaoSupport implements ManageDao {
 	}
 
 	@Override
+	public void saveOperationlog(Operationlog operationlog) {
+		// TODO Auto-generated method stub
+		this.getHibernateTemplate().save(operationlog);
+	}
+	
+	@Override
 	public Pm_user findUser(String creator) {
 		// TODO Auto-generated method stub
 		String sql="from Jurisdiction where name=?";
@@ -88,14 +98,11 @@ public class ManageDaoImpl extends HibernateDaoSupport implements ManageDao {
 		this.getHibernateTemplate().save(pm_item);
 		
 		//记录操作日志;
-		Pm_user operator=pm_item.getCreator();
-		Pm_item operation_object=pm_item;
-		Date operation_date=new Date();
 		Operationlog operationlog=new Operationlog();
-		operationlog.setOperation_date(operation_date);
-		operationlog.setOperation_object(operation_object.getItem_name());
+		operationlog.setOperation_date(new Date());
+		operationlog.setOperation_object(pm_item.getItem_name());
 		operationlog.setOperation_type("添加");
-		operationlog.setOperator(operator);
+		operationlog.setOperator("超级管理员");
 		this.getHibernateTemplate().save(operationlog);
 		
 		return "success";
@@ -108,14 +115,11 @@ public class ManageDaoImpl extends HibernateDaoSupport implements ManageDao {
 			Pm_item pm_item=list.get(i);
 			this.getHibernateTemplate().delete(pm_item);
 			//记录操作日志；
-			Pm_user operator=pm_item.getCreator();
-			Pm_item operation_object=pm_item;
-			Date operation_date=new Date();
 			Operationlog operationlog=new Operationlog();
-			operationlog.setOperation_date(operation_date);
-			operationlog.setOperation_object(operation_object.getItem_name());
+			operationlog.setOperation_date(new Date());
+			operationlog.setOperation_object(pm_item.getItem_name());
 			operationlog.setOperation_type("删除");
-			operationlog.setOperator(operator);
+			operationlog.setOperator("超级管理员");
 			this.getHibernateTemplate().save(operationlog);
 		}
 	}
@@ -133,15 +137,41 @@ public class ManageDaoImpl extends HibernateDaoSupport implements ManageDao {
 		// TODO Auto-generated method stub
 		this.getHibernateTemplate().update(pm_item);
 		//记录操作日志；
-		Pm_user operator=pm_item.getCreator();
-		Pm_item operation_object=pm_item;
-		Date operation_date=new Date();
 		Operationlog operationlog=new Operationlog();
-		operationlog.setOperation_date(operation_date);
-		operationlog.setOperation_object(operation_object.getItem_name());
+		operationlog.setOperation_date(new Date());
+		operationlog.setOperation_object(pm_item.getItem_name());
 		operationlog.setOperation_type("更新");
-		operationlog.setOperator(operator);
+		operationlog.setOperator("超级管理员");
 		this.getHibernateTemplate().save(operationlog);
+	}
+
+	@Override
+	public List<Pm_item> batch_out(List<Pm_item> list0) {
+		// TODO Auto-generated method stub
+		String sql="from Pm_item where id=?";
+		List<Pm_item> list=new ArrayList<Pm_item>();
+		for(int i=0;i<list0.size();i++){
+			list.add((Pm_item) this.getHibernateTemplate().find(sql,list0.get(i).getId()).get(0));
+		}
+		return list;
+	}
+
+	@Override
+	public void batch_in(List<Pm_item> pm_items) {
+		// TODO Auto-generated method stub
+		for(int i=0;i<pm_items.size();i++){
+			Pm_item pm_item=pm_items.get(i);
+			if(this.getHibernateTemplate().find("from Pm_item where item_name=?",pm_item.getItem_name()).size()==0){
+			this.getHibernateTemplate().save(pm_item);
+			//记录操作日志;
+			Operationlog operationlog=new Operationlog();
+			operationlog.setOperation_date(new Date());
+			operationlog.setOperation_object(pm_items.get(i).getItem_name());
+			operationlog.setOperation_type("批量导入");
+			operationlog.setOperator("超级管理员");
+			this.getHibernateTemplate().save(operationlog);
+			}
+		}
 	}
 
 }

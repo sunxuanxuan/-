@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<!-- Generated 2017-12-2 19:09:43 by Hibernate Tools 3.5.0.Final -->
+<!-- Generated 2017-12-6 17:39:36 by Hibernate Tools 3.5.0.Final -->
 <hibernate-mapping>
     <class name="com.PasswordManage.domain.Operationlog" table="OPERATIONLOG">
         <id name="id" type="java.lang.String">
@@ -17,8 +17,8 @@
         <property name="operation_date" type="java.util.Date">
             <column name="OPERATION_DATE" />
         </property>
-        <many-to-one name="operator" class="com.PasswordManage.domain.Pm_user" fetch="join">
+        <property name="operator" type="java.lang.String">
             <column name="OPERATOR" />
-        </many-to-one>
+        </property>
     </class>
 </hibernate-mapping>

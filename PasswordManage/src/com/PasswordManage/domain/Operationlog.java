@@ -12,7 +12,7 @@ public class Operationlog {
 	private String operation_type;
 	private String operation_object;//操作对象;
 	private Date operation_date;
-	private Pm_user operator;//操作者;
+	private String operator;//操作者;
 	
 	public String getId() {
 		return id;
@@ -38,12 +38,11 @@ public class Operationlog {
 	public void setOperation_date(Date operation_date) {
 		this.operation_date = operation_date;
 	}
-	public Pm_user getOperator() {
+	public String getOperator() {
 		return operator;
 	}
-	public void setOperator(Pm_user operator) {
+	public void setOperator(String operator) {
 		this.operator = operator;
 	}
-	
-	
+		
 }

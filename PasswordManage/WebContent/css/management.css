@@ -6,7 +6,6 @@ a{
    text-decoration: none;
    color:#fff;
 }
-
 /*导航栏样式*/
 header{
    height: 60px;
@@ -190,7 +189,7 @@ header{
 }
 #operation ul li{
 	display:inline-block;
-	width:70px;
+	margin-left:20px;
 	text-align:center;
 }
 #operation ul li a{
@@ -209,6 +208,12 @@ header{
 }
 #operation #delete{
 	background:url("../icons/delete.png")no-repeat;
+}
+#operation #batch_in{
+	background:url("../icons/batch_in.png")no-repeat;
+}
+#operation #batch_out{
+	background:url("../icons/batch_out.png")no-repeat;
 }
 #show_table{
 	width:98%;
@@ -251,7 +256,15 @@ header{
 #show_table .td8{
 	width:380px;
 }
-
+#show p{
+	font-size:12px;
+	float:right;
+	margin-top:10px;
+	margin-right:10px;
+}
+#show p a{
+	color:#000;
+}
 /*添加数据样式*/
 #show .add_div{
 	width:250px;
@@ -344,6 +357,61 @@ header{
 }
 #show #back:hover{
 	border:3px solid red;
+}
+/*批量导出样式*/
+#mask{
+	position:absolute;
+	left:0px;
+	top:0px;
+	width:100%;
+	height:100%;
+	background-color:#000;
+	opacity:0.3;
+}
+#div_input{
+	position:absolute;
+	width:300px;
+	height:150px;
+	background-color:#fff;
+	border:1px solid #84c1ff;
+}
+#div_input span{
+	display:inline-block;
+	position:absolute;
+	left:50px;
+	top:30px;
+}
+#div_input #batch_in_submit{
+	width:80px;
+	height:30px;
+	position:absolute;
+	left:50px;
+	top:100px;
+	background-color:#84c1ff;
+	border:1px solid #84c1ff;
+	border-radius: 4px;
+}
+#div_input #batch_in_back{
+	width:80px;
+	height:30px;
+	position:absolute;
+	left:170px;
+	top:100px;
+	background-color:#ffcbb3;
+	border:1px solid #ffcbb3;
+	border-radius: 4px;
+}
+#div_input #batch_in_back:hover{
+	background-color:#ffbd9d;
+}
+#div_input #batch_in_submit:hover{
+	background-color:#66b3ff;
+}
+#div_input #batch_in_error{
+	color:red;
+	position:absolute;
+	left:100px;
+	top:70px;
 }
 /*页脚样式*/
 footer{
