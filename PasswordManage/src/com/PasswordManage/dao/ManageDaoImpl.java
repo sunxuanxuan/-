@@ -8,11 +8,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.concurrent.SynchronousQueue;
 
 import org.apache.poi.poifs.filesystem.OPOIFSDocument;
 import org.omg.CORBA.PUBLIC_MEMBER;
 import org.omg.PortableInterceptor.INACTIVE;
 import org.omg.PortableServer.ThreadPolicyOperations;
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.impl.STIconSetTypeImpl;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import com.PasswordManage.domain.AddHelp;
@@ -172,6 +174,26 @@ public class ManageDaoImpl extends HibernateDaoSupport implements ManageDao {
 			this.getHibernateTemplate().save(operationlog);
 			}
 		}
+	}
+
+	@Override
+	public List<Pm_item> query(List<String> values,Map<String,String> mm) {
+		// TODO Auto-generated method stub
+		String sql="from Pm_item where ";
+		String []strings=new String[values.size()];
+		for(int i=0;i<values.size();i++){
+			strings[i]=values.get(i);
+		}
+		sql+=mm.get(strings[0])+"=?";
+		for(int i=1;i<strings.length;i++){
+			sql+=" and "+mm.get(strings[i])+"=?";
+		}
+		Object []vv=new Object[strings.length];
+		for(int i=0;i<strings.length;i++){
+			vv[i]=strings[i];
+		}
+		List<Pm_item> list=this.getHibernateTemplate().find(sql,vv);
+		return list;
 	}
 
 }

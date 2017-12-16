@@ -45,6 +45,9 @@
       <result name="batch_in" type="json">
          <param name="root">result</param>
       </result>
+      <result name="query" type="json">
+         <param name="root">result</param>
+      </result>
     </action>
     
     

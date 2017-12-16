@@ -1,13 +1,6 @@
 package com.PasswordManage.domain;
 
 import java.util.Date;
-import java.util.UUID;
-
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.GenericGenerator;
 
 public class Pm_user {
    

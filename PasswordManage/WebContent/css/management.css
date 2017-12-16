@@ -413,6 +413,36 @@ header{
 	left:100px;
 	top:70px;
 }
+/*查询样式*/
+#show #q_list{
+	margin-top:50px;
+	list-style:none;
+}
+#show #q_list li{
+	display:inline-block;
+	margin-left:40px;
+}
+#show #q_list li span{
+	font-size:15px;
+	margin-right:5px;
+}
+#show #q_list input{
+	width:150px;
+	height:25px;
+	text-align:center;
+}
+#show #q_list select{
+	width:150px;
+	height:25px;
+}
+#show button{
+	width:100px;
+	height:25px;
+	background-color:#84c1ff;
+}
+#show button:hover{
+	border:2px solid blue;
+}
 /*页脚样式*/
 footer{
     width:100%;

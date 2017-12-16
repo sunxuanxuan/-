@@ -24,4 +24,6 @@ public interface ManageService {
 
 	void batch_in(File destFile,String batch_inFileName);
 
+	Map<String,Object> query(String q_ip_address, String q_item_name, String q_password_status, String q_username,String q_type2);
+
 }

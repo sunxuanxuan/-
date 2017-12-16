@@ -30,4 +30,6 @@ public interface ManageDao {
 
 	void batch_in(List<Pm_item> pm_items);
 
+	List<Pm_item> query(List<String> values,Map<String,String> mm);
+
 }

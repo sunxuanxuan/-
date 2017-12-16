@@ -13,7 +13,6 @@ public class Operationlog {
 	private String operation_object;//操作对象;
 	private Date operation_date;
 	private String operator;//操作者;
-	
 	public String getId() {
 		return id;
 	}

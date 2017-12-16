@@ -119,54 +119,6 @@ function zTreeOnClick(event, treeId, treeNode){
 				th_td8.html("创建日期");
 				show_table_th.append(th_td8);
 				show_table.append(show_table_th);
-				/*for(var i=0;i<parseInt(data["num"]);i++){
-					if(i>7){
-						break;
-					}
-					var a="item_"+i;
-					var tr=$("<tr></tr>");
-					if(i%2==0){
-						tr.attr("class","even");
-					}else{
-						tr.attr("class","odd");
-					}
-					var td1=$("<td class=\"td1\"></td>");
-					var checkbox=$("<input type=\"checkbox\"/>");
-					checkbox.attr("id","checkbox_"+i);
-					td1.append(checkbox);
-					tr.append(td1);
-					var td2=$("<td class=\"td2\"></td>");
-					td2.html(data[a].item_name);
-					tr.append(td2);
-					if(treeNode.getParentNode().name=="主机密码"){
-					var td3=$("<td class=\"td3\"></td>");
-					td3.html(data[a].ip_address);
-					tr.append(td3);
-					}
-					var td4=$("<td class=\"td4\"></td>");
-					td4.html(data[a].username);
-					tr.append(td4);
-					var td5=$("<td class=\"td5\"></td>");
-					var str=data[a].password.substr(0,1);
-					for(var k=0;k<data[a].password.length-1;k++){
-						str+="*";
-					}
-					td5.html(str); 
-					tr.append(td5);
-					var td6=$("<td class=\"td6\"></td>");
-					td6.html(data[a].password_status);
-					if(data[a].password_status=="过期"){
-						td6.css("color","red");
-					}
-					tr.append(td6);
-					var td7=$("<td class=\"td7\"></td>");
-					td7.html(data[a].creator.jurisdiction.name);
-					tr.append(td7);
-					var td8=$("<td class=\"td8\"></td>");
-					td8.html(data[a].create_date);
-					tr.append(td8);
-					show_table.append(tr);
-				}*/
 				$("#show").append(show_table);
 				var fathernode=treeNode.getParentNode().name;
 				show_by_page(data,1,fathernode);
@@ -176,8 +128,14 @@ function zTreeOnClick(event, treeId, treeNode){
 			    var change_page=$("<p>当前页数为<span id='curpage'>1</span>/<span id='totalpage'>1</span> ,<a id='last_page' href='javascript:lastpage("+obj+",\"数据库密码\")'>上一页</a>/<a id='next_page' href='javascript:nextpage("+obj+",\"数据库密码\")'>下一页</a></p>");	
 				}
 				$("#show").append(change_page);
-				var tp=parseInt(parseInt(data["num"])/7+1);
+				var tp=parseInt(parseInt(data["num"])/8)+1;
 				$("#totalpage").html(tp.toString());
+				if(fathernode=="主机密码"){
+					var query=$("<ul id='q_list'><li id='q_iname'><span>主机名</span><input type='text'/></li><li id='q_uname'><span>用户名</span><input type='text'/></li><li id='q_ipaddress'><span>IP地址</span><input type='text'/></li><li id='q_pstatus'><span>密码状态</span><select><option value='正常'>正常</option><option value='过期'>过期</option></select></li><li><button onclick='javascript:q_submit()'>查询</button></li></ul>");	
+				}else if(fathernode=="数据库密码"){
+					var query=$("<ul id='q_list'><li id='q_iname'><span>数据库名</span><input type='text'/></li><li id='q_uname'><span>用户名</span><input type='text'/></li><li id='q_ipaddress'><span>IP地址</span><input type='text'/></li><li id='q_pstatus'><span>密码状态</span><select><option value='正常'>正常</option><option value='过期'>过期</option></select></li><li><button onclick='javascript:q_submit()'>查询</button></li></ul>");
+				}
+                $("#show").append(query);
 		    },
 		    error:function(e){
 		    	 alert("Error!");
@@ -704,4 +662,88 @@ function emptytd(fathernode){
 	th_td8.html("创建日期");
 	show_table_th.append(th_td8);
 	$("#show_table").append(show_table_th);
+}
+//查询操作;
+function q_submit(){
+	if($("#q_ipaddress input").val()!=''&&!isIp($("#q_ipaddress input").val())){
+		alert("请输入正确的IP地址!");
+	}
+	var treeObj=$.fn.zTree.getZTreeObj("ztree1");
+	var nodes=treeObj.getSelectedNodes();
+	var q_type2=nodes[0].name;
+	$.ajax({
+		url:"manage_query",
+		type:"post",
+		data:{
+			"q_item_name":$("#q_iname input").val(),
+			"q_username":$("#q_uname input").val(),
+			"q_ip_address":$("#q_ipaddress input").val(),
+			"q_password_status":$("#q_pstatus select option:selected").val(),
+			"q_type2":q_type2
+		},
+		success: function(data){
+			var fathernode=$("#title").html();
+			$("#b_body").empty();
+	    	var title=$("<span id=\"title\"></span>")
+	    	title.html(fathernode);
+			$("#b_body").append(title);
+			var show=$("<div id=\"show\"></div>");
+			$("#b_body").append(show);
+			var operation=$("<div id=\"operation\"></div>");
+			var obj=JSON.stringify(data);
+/*函数传参问题！*/  var ul=$("<ul><li><a id=\"add\" href=\"javascript:show_add()\">添加</a></li><li><a id=\"update\" href=\"javascript:void(0)\" onclick='show_update("+obj+")'>修改</a></li><li><a id=\"delete\" href=\"javascript:void(0)\" onclick='show_delete("+obj+")'>删除</a></li><li><a id=\"batch_in\"href=\"javascript:batch_in()\">批量导入</a></li><li><a id=\"batch_out\"href=\"javascript:void(0)\" onclick='batch_out("+obj+")'>批量导出</a></li></ul>");
+			operation.append(ul);
+			$("#show").append(operation);
+			var show_table=$("<table id=\"show_table\"></table>");
+			var show_table_th=$("<tr id=\"show_table_th\"></tr>");
+			var th_td1=$("<td class=\"td1\"></td>");
+			th_td1.html("<input type=\"checkbox\" disabled=\"true\"/>");
+			show_table_th.append(th_td1);
+			var th_td2=$("<td class=\"td2\"></td>");
+			th_td2.html(fathernode.substring(0,fathernode.indexOf("密"))+"名");
+			show_table_th.append(th_td2);
+			if(fathernode=="主机密码"){
+			var th_td3=$("<td class=\"td3\"></td>");
+			th_td3.html("IP地址");
+			show_table_th.append(th_td3);
+			}
+			var th_td4=$("<td class=\"td4\"></td>");
+			th_td4.html("用户名");
+			show_table_th.append(th_td4);
+			var th_td5=$("<td class=\"td5\"></td>");
+			th_td5.html("密码");
+			show_table_th.append(th_td5);
+			var th_td6=$("<td class=\"td6\"></td>");
+			th_td6.html("密码状态");
+			show_table_th.append(th_td6);
+			var th_td7=$("<td class=\"td7\"></td>");
+			th_td7.html("创建人");
+			show_table_th.append(th_td7);
+			var th_td8=$("<td class=\"td8\"></td>");
+			th_td8.html("创建日期");
+			show_table_th.append(th_td8);
+			show_table.append(show_table_th);
+			$("#show").append(show_table);
+			
+			show_by_page(data,1,fathernode);
+			
+			if(fathernode=="主机密码管理"){
+			var change_page=$("<p>当前页数为<span id='curpage'>1</span>/<span id='totalpage'>1</span> ,<a id='last_page' href='javascript:lastpage("+obj+",\"主机密码\")'>上一页</a>/<a id='next_page' href='javascript:nextpage("+obj+",\"主机密码\")'>下一页</a></p>");
+			}else if(fathernode=="数据库密码管理"){
+		    var change_page=$("<p>当前页数为<span id='curpage'>1</span>/<span id='totalpage'>1</span> ,<a id='last_page' href='javascript:lastpage("+obj+",\"数据库密码\")'>上一页</a>/<a id='next_page' href='javascript:nextpage("+obj+",\"数据库密码\")'>下一页</a></p>");	
+			}
+			$("#show").append(change_page);
+			var tp=parseInt(parseInt(data["num"])/8+1);
+			$("#totalpage").html(tp.toString());
+			if(fathernode=="主机密码管理"){
+				var query=$("<ul id='q_list'><li id='q_iname'><span>主机名</span><input type='text'/></li><li id='q_uname'><span>用户名</span><input type='text'/></li><li id='q_ipaddress'><span>IP地址</span><input type='text'/></li><li id='q_pstatus'><span>密码状态</span><select><option value='正常'>正常</option><option value='过期'>过期</option></select></li><li><button onclick='javascript:q_submit()'>查询</button></li></ul>");	
+			}else if(fathernode=="数据库密码管理"){
+				var query=$("<ul id='q_list'><li id='q_iname'><span>数据库名</span><input type='text'/></li><li id='q_uname'><span>用户名</span><input type='text'/></li><li id='q_ipaddress'><span>IP地址</span><input type='text'/></li><li id='q_pstatus'><span>密码状态</span><select><option value='正常'>正常</option><option value='过期'>过期</option></select></li><li><button onclick='javascript:q_submit()'>查询</button></li></ul>");
+			}
+            $("#show").append(query);
+		},
+		error:function(data){
+			alert("Error");
+		}
+	})
 }

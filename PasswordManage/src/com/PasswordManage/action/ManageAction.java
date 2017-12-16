@@ -37,6 +37,11 @@ public class ManageAction extends ActionSupport implements ModelDriven<AddHelp> 
 	private InputStream inputStream;
 	private File batch_in;
 	private String batch_inFileName;
+    private String q_item_name;
+    private String q_username;
+    private String q_ip_address;
+    private String q_password_status;
+    private String q_type2;
 	//获取模型驱动对象
 	@Override
 	public AddHelp getModel() {
@@ -47,6 +52,46 @@ public class ManageAction extends ActionSupport implements ModelDriven<AddHelp> 
 	
 	public void setResult(Map<String, Object> result) {
 		this.result = result;
+	}
+
+	public String getQ_type2() {
+		return q_type2;
+	}
+
+	public void setQ_type2(String q_type2) {
+		this.q_type2 = q_type2;
+	}
+
+	public String getQ_item_name() {
+		return q_item_name;
+	}
+
+	public void setQ_item_name(String q_item_name) {
+		this.q_item_name = q_item_name;
+	}
+
+	public String getQ_username() {
+		return q_username;
+	}
+
+	public void setQ_username(String q_username) {
+		this.q_username = q_username;
+	}
+
+	public String getQ_ip_address() {
+		return q_ip_address;
+	}
+
+	public void setQ_ip_address(String q_ip_address) {
+		this.q_ip_address = q_ip_address;
+	}
+
+	public String getQ_password_status() {
+		return q_password_status;
+	}
+
+	public void setQ_password_status(String q_password_status) {
+		this.q_password_status = q_password_status;
 	}
 
 	public String getBatch_inFileName() {
@@ -153,5 +198,9 @@ public class ManageAction extends ActionSupport implements ModelDriven<AddHelp> 
     	manageService.batch_in(destFile,batch_inFileName);
 		result.put("result","success");
     	return "batch_in";
+	}
+    public String query() {
+		result=manageService.query(q_ip_address, q_item_name, q_password_status, q_username,q_type2);
+    	return "query";
 	}
 }

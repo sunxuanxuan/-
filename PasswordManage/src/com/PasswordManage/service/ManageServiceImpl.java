@@ -394,5 +394,39 @@ public class ManageServiceImpl implements ManageService {
 		  System.out.println(e.getMessage());
 	  }
 	}
+
+	@Override
+	public Map<String,Object> query(String q_ip_address, String q_item_name, String q_password_status, String q_username,String q_type2) {
+		// TODO Auto-generated method stub
+		List<String> values=new ArrayList<String>();
+		Map<String,String> mm=new HashMap<String,String>();
+		if(!q_ip_address.equals("")){
+			values.add(q_ip_address);
+			mm.put(q_ip_address,"ip_address");
+		}
+		if(!q_item_name.equals("")){
+			values.add(q_item_name);
+			mm.put(q_item_name,"item_name");
+		}
+		if(!q_password_status.equals("")){
+			values.add(q_password_status);
+			mm.put(q_password_status,"password_status");
+		}
+		if(!q_username.equals("")){
+			values.add(q_username);
+			mm.put(q_username,"username");
+		}
+		if(!q_type2.equals("")){
+			values.add(q_type2);
+			mm.put(q_type2,"type2");
+		}
+		List<Pm_item> list=manageDao.query(values,mm);
+		Map<String,Object> map=new HashMap<String,Object>();
+		map.put("num", String.valueOf(list.size()));
+		for(int i=0;i<list.size();i++){
+			map.put("item_"+i, list.get(i));
+		}
+		return map;
+	}
 	
 }
