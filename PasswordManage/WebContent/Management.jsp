@@ -38,7 +38,7 @@
    <span><a href="#">密码管理</a></span>
   </div>
   <div id="p_u">
-    <span>当前登录用户:</span><span><s:property value="#user.getName()"/></span>
+    <span>当前登录用户:</span><span id="p_u_j"><s:property value="#session.user.getJurisdiction().getName()"/></span>
   </div>
  </div>
 </header>

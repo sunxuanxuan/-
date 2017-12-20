@@ -32,4 +32,6 @@ public interface ManageDao {
 
 	List<Pm_item> query(List<String> values,Map<String,String> mm);
 
+	List<Operationlog> getLog();
+
 }

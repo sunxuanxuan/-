@@ -87,7 +87,12 @@ function zTreeOnClick(event, treeId, treeNode){
 				$("#b_body").append(show);
 				var operation=$("<div id=\"operation\"></div>");
 				var obj=JSON.stringify(data);
-/*函数传参问题！*/  var ul=$("<ul><li><a id=\"add\" href=\"javascript:show_add()\">添加</a></li><li><a id=\"update\" href=\"javascript:void(0)\" onclick='show_update("+obj+")'>修改</a></li><li><a id=\"delete\" href=\"javascript:void(0)\" onclick='show_delete("+obj+")'>删除</a></li><li><a id=\"batch_in\"href=\"javascript:batch_in()\">批量导入</a></li><li><a id=\"batch_out\"href=\"javascript:void(0)\" onclick='batch_out("+obj+")'>批量导出</a></li></ul>");
+/*函数传参问题！*/  var ul=$("<ul><li><a id=\"add\" href=\"javascript:show_add()\">添加</a></li>"
+		        +"<li><a id=\"update\" href=\"javascript:void(0)\" onclick='show_update("+obj+")'>修改</a></li>"
+		        +"<li><a id=\"delete\" href=\"javascript:void(0)\" onclick='show_delete("+obj+")'>删除</a></li>"
+		        +"<li><a id=\"batch_in\"href=\"javascript:batch_in()\">批量导入</a></li>"
+		        +"<li><a id=\"batch_out\"href=\"javascript:void(0)\" onclick='batch_out("+obj+")'>批量导出</a></li>"
+		        +"<li><a id='log_dl' href='javascript:log_dl()'>操作日志下载</a></li></ul>");
 				operation.append(ul);
 				$("#show").append(operation);
 				var show_table=$("<table id=\"show_table\"></table>");
@@ -166,9 +171,16 @@ var zNodes=[{ name:"密码管理",open: false,children:
 $(document).ready(function(){
 	zTreeObj=$.fn.zTree.init($("#ztree1"), setting, zNodes); 
 });
-
+/*获取当前用户权限*/
+function getJ(){
+	return $("#p_u_j").html();
+}
 /*添加事件页面元素生成*/
 function show_add(){
+	if(getJ()=="管理员"){
+		alert("需要超级管理员权限！");
+		return;
+	}
 	var title=$("#title").html();
 	var parent=title.substring(0,title.indexOf("管"));
 	$("#show").empty();
@@ -344,6 +356,10 @@ function getCheckedBoxes(){
 }
 //删除操作;
 function show_delete(data){
+	if(getJ()=="管理员"){
+		alert("需要超级管理员权限！");
+		return;
+	}
 	var checkedBoxes=getCheckedBoxes();
 	if(checkedBoxes.length==0){
 		alert("未勾选任何记录!");
@@ -385,6 +401,10 @@ function show_delete(data){
 }
 //update操作;
 function show_update(data){
+	if(getJ()=="管理员"){
+		alert("需要超级管理员权限！");
+		return;
+	}
 	var checkedBoxes=getCheckedBoxes();
 	if(checkedBoxes.length==0){
 		alert("未勾选任何记录!");
@@ -422,7 +442,6 @@ function show_update(data){
 				var div_input=$(this).find("input");
 				var date=item[div_id];
 				div_input.attr("value",date.substr(0, date.indexOf("T")));
-				div_input.attr("disabled","disabled");
 			}else{
 				var div_input=$(this).find("input");
 				div_input.attr("value",item[div_id]);
@@ -472,6 +491,10 @@ function update_submit(){
 }
 //批量导出操作;
 function batch_out(data){
+	if(getJ()=="管理员"){
+		alert("需要超级管理员权限！");
+		return;
+	}
 	var checkedBoxes=getCheckedBoxes();
 	if(checkedBoxes.length==0){
 		alert("未勾选任何记录！")
@@ -493,15 +516,17 @@ function batch_out(data){
 	   var input=$("<input type='text' name='batch_out'/>");
 	   input.attr("value",batch_out);
 	   form.append(input);
+	   form.css("display","none");
 	   $("#show").append(form);
-	}else{
-	   $("#batch_out_form").css("display","block");
 	}
-	form.submit();
-	$("#batch_out_form").css("display","none");
+    $("#batch_out_form").submit();
 }
 //批量导入;
 function batch_in(){
+	if(getJ()=="管理员"){
+		alert("需要超级管理员权限！");
+		return;
+	}
 	if($("#mask").length==0){
 	  var mask=$("<div id=\"mask\"></div>");
 	  var div_iput=$("<div id=\"div_input\"></div>");
@@ -531,6 +556,38 @@ function file_submit(){
 		var batch_in_error=$("<span id='batch_in_error'>还未选择文件</span>");
 		$("#div_input").append(batch_in_error);
 	}else{
+		var filename=$("#file_input").val();
+		var index=filename.lastIndexOf(".");
+		var ext = filename.substr(index+1);
+		if(ext!="xls"&&ext!="xlsx"){
+			alert("只能上传Excel文件！");
+		}else{
+			var aa=new FormData($("#batch_in_form")[0]);
+			$.ajax({
+				url:"manage_batch_in",
+				type:"post",
+				data:aa,
+		        async: false,  
+		        cache: false,
+		        contentType: false,
+		        processData: false, 
+				success: function(data){
+					if(data["result"]=="success"){
+						$("#mask").css("display","none");
+						$("#div_input").css("display","none");
+						alert("上传成功！");
+						var zTree=$.fn.zTree.getZTreeObj("ztree1");
+						var node=zTree.getNodeByParam("name","linux主机");
+					    zTree.selectNode(node);
+					    zTree.setting.callback.onClick(null,zTree.setting.treeId,node);
+					}
+				},
+				error:function(e){
+					alert("Error!");
+				}
+			})
+		}
+	}/*{
 		var aa=new FormData($("#batch_in_form")[0]);
 		$.ajax({
 			url:"manage_batch_in",
@@ -555,7 +612,7 @@ function file_submit(){
 				alert("Error!");
 			}
 		})
-	}
+	}*/
 }
 function file_back(){
 	$("#mask").css("display","none");
@@ -691,7 +748,12 @@ function q_submit(){
 			$("#b_body").append(show);
 			var operation=$("<div id=\"operation\"></div>");
 			var obj=JSON.stringify(data);
-/*函数传参问题！*/  var ul=$("<ul><li><a id=\"add\" href=\"javascript:show_add()\">添加</a></li><li><a id=\"update\" href=\"javascript:void(0)\" onclick='show_update("+obj+")'>修改</a></li><li><a id=\"delete\" href=\"javascript:void(0)\" onclick='show_delete("+obj+")'>删除</a></li><li><a id=\"batch_in\"href=\"javascript:batch_in()\">批量导入</a></li><li><a id=\"batch_out\"href=\"javascript:void(0)\" onclick='batch_out("+obj+")'>批量导出</a></li></ul>");
+/*函数传参问题！*/  var ul=$("<ul><li><a id=\"add\" href=\"javascript:show_add()\">添加</a></li><li>"
+		    +"<a id=\"update\" href=\"javascript:void(0)\" onclick='show_update("+obj+")'>修改</a></li><li>"
+		    +"<a id=\"delete\" href=\"javascript:void(0)\" onclick='show_delete("+obj+")'>删除</a></li><li>"
+		    +"<a id=\"batch_in\"href=\"javascript:batch_in()\">批量导入</a></li><li>"
+		    +"<a id=\"batch_out\"href=\"javascript:void(0)\" onclick='batch_out("+obj+")'>批量导出</a></li><li>"
+		    +"<a id='log_dl' href='javascript:log_dl()'>操作日志下载</a></li></ul>");
 			operation.append(ul);
 			$("#show").append(operation);
 			var show_table=$("<table id=\"show_table\"></table>");
@@ -746,4 +808,17 @@ function q_submit(){
 			alert("Error");
 		}
 	})
+}
+//操作日志导出;
+function log_dl(){
+	if(getJ()=="管理员"){
+		alert("需要超级管理员权限！");
+		return;
+	}
+	if($("#log_dl_form").length==0){
+		   var form=$("<form method='post' action='manage_log_dl' id='log_dl_form'></form>");
+		   form.css("display","none");
+		   $("#show").append(form);
+	   }
+	$("#log_dl_form").submit();
 }

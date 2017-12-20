@@ -48,9 +48,6 @@
 <bean id="loginAction" class="com.PasswordManage.action.LoginAction" scope="prototype">
    <property name="loginService" ref="loginService"></property>
 </bean>   
-<bean id="firstPageAction" class="com.PasswordManage.action.FirstPageAction" scope="prototype">
-   <property name="firstPageService" ref="firstPageService"></property>
-</bean>
 <bean id="manageAction" class="com.PasswordManage.action.ManageAction" scope="prototype">
    <property name="manageService" ref="manageService"></property>
 </bean>
@@ -59,18 +56,12 @@
 <bean id="loginService" class="com.PasswordManage.service.LoginServiceImpl">
    <property name="loginDao" ref="loginDao"></property>
 </bean>
-<bean id="firstPageService" class="com.PasswordManage.service.FirstPageServiceImpl">
-   <property name="firstPageDao" ref="firstPageDao"></property>
-</bean>
 <bean id="manageService" class="com.PasswordManage.service.ManageServiceImpl">
    <property name="manageDao" ref="manageDao"></property>
 </bean>
 
 <!-- 配置Dao -->
 <bean id="loginDao" class="com.PasswordManage.dao.LoginDaoImpl">
-   <property name="sessionFactory" ref="sessionFactory"></property>
-</bean>
-<bean id="firstPageDao" class="com.PasswordManage.dao.FirstPageDaoImpl">
    <property name="sessionFactory" ref="sessionFactory"></property>
 </bean>
 <bean id="manageDao" class="com.PasswordManage.dao.ManageDaoImpl">

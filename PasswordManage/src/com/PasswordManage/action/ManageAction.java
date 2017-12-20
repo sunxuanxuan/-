@@ -42,6 +42,7 @@ public class ManageAction extends ActionSupport implements ModelDriven<AddHelp> 
     private String q_ip_address;
     private String q_password_status;
     private String q_type2;
+    private File log_dl;
 	//获取模型驱动对象
 	@Override
 	public AddHelp getModel() {
@@ -52,6 +53,14 @@ public class ManageAction extends ActionSupport implements ModelDriven<AddHelp> 
 	
 	public void setResult(Map<String, Object> result) {
 		this.result = result;
+	}
+
+	public File getLog_dl() {
+		return log_dl;
+	}
+
+	public void setLog_dl(File log_dl) {
+		this.log_dl = log_dl;
 	}
 
 	public String getQ_type2() {
@@ -202,5 +211,18 @@ public class ManageAction extends ActionSupport implements ModelDriven<AddHelp> 
     public String query() {
 		result=manageService.query(q_ip_address, q_item_name, q_password_status, q_username,q_type2);
     	return "query";
+	}
+    public String log_dl() {
+		manageService.log_dl();
+		File file=new File("log.txt");
+		if(file.exists()){
+			try{
+				inputStream=new FileInputStream(file);
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+			file.delete();
+		}
+    	return "log_dl";
 	}
 }

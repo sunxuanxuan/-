@@ -215,6 +215,9 @@ header{
 #operation #batch_out{
 	background:url("../icons/batch_out.png")no-repeat;
 }
+#operation #log_dl{
+	background:url("../icons/log.png")no-repeat;
+}
 #show_table{
 	width:98%;
 	margin:0px auto;

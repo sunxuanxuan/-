@@ -13,11 +13,6 @@
       <result name="logout">/FirstPage.jsp</result>
       <result name="register">/Register.jsp</result>
     </action>
-    
-    <!-- 首页的Action -->
-    <action name="firstPage_*" class="firstPageAction" method="{1}">
-      <result name="jump_success">/Management.jsp</result>
-    </action>
 
     <!-- 管理页的Action -->
     <action name="manage_*" class="manageAction" method="{1}">
@@ -41,6 +36,12 @@
          <param name="contentDisposition">attachment;fileName="Batch_out.xls"</param>
          <param name="contentType">application/vnd.ms-excel</param>
          <param name="bufferSize">1024</param>
+      </result>
+      <result name="log_dl" type="stream">
+          <param name="inputName">inputStream</param>
+          <param name="contentType">text/plain</param>
+          <param name="contentDisposition">attachment;fileName="Log.txt"</param>
+          <param name="bufferSize">1024</param>
       </result>
       <result name="batch_in" type="json">
          <param name="root">result</param>

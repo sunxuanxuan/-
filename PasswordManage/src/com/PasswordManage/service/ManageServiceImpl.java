@@ -46,6 +46,7 @@ import org.aspectj.weaver.AjAttribute.PrivilegedAttribute;
 import org.aspectj.weaver.reflect.ReflectionWorld;
 import org.eclipse.jdt.internal.compiler.tool.EclipseCompiler;
 import org.springframework.jdbc.support.incrementer.HsqlMaxValueIncrementer;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.PasswordManage.dao.ManageDao;
 import com.PasswordManage.domain.AddHelp;
@@ -64,6 +65,7 @@ import com.mysql.jdbc.PreparedStatement;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
+@Transactional
 public class ManageServiceImpl implements ManageService {
 
 	private ManageDao manageDao;
@@ -221,6 +223,12 @@ public class ManageServiceImpl implements ManageService {
 			
 		}*/
 		pm_item.setPassword(addhelp.getPassword());
+		pm_item.setPassword_expired_date(addhelp.getPassword_expired_date());
+		if(addhelp.getPassword_expired_date().getTime()>new Date().getTime()){
+			pm_item.setPassword_status("正常");
+		}else{
+			pm_item.setPassword_status("过期");
+		}
 		manageDao.update(pm_item);
 	}
 
@@ -427,6 +435,27 @@ public class ManageServiceImpl implements ManageService {
 			map.put("item_"+i, list.get(i));
 		}
 		return map;
+	}
+
+	@Override
+	public void log_dl(){
+		// TODO Auto-generated method stub
+		List<Operationlog> list=manageDao.getLog();
+		File file=new File("log.txt");
+		try{
+			FileWriter fW=new FileWriter(file);
+			BufferedWriter bW=new BufferedWriter(fW);
+			for(int i=0;i<list.size();i++){
+				Operationlog o=list.get(i);
+				bW.write(o.getOperation_date()+"  "+o.getOperator()+"  "+o.getOperation_type()+"  "+o.getOperation_object());
+				bW.newLine();
+				bW.flush();
+			}
+			fW.close();
+			bW.close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 	
 }

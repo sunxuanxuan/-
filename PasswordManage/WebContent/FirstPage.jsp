@@ -19,21 +19,14 @@ $(document).ready(function(){
 function jump(){
 	var name;
 	name="${user.getName()}";
+
 	if(name!=""){
-		var myForm=document.createElement("form");
-		myForm.method="post";
-		myForm.action="firstPage_jump";
-		var myInput1=document.createElement("input");
-		myInput1.setAttribute("name", "account");
-		myInput1.setAttribute("value","${user.getAccount()}");
-		myForm.appendChild(myInput1);
-		var myInput2=document.createElement("input");
-		myInput2.setAttribute("name", "password");
-		myInput2.setAttribute("value","${user.getPassword()}");
-		myForm.appendChild(myInput2);
-		document.body.appendChild(myForm);
-		myForm.submit();
-		document.body.removeChild(myForm);
+		var leval=parseInt("${user.getJurisdiction().getLeval()}");
+		if(leval<2){
+			alert("需要管理员以上的权限！");
+			return;
+		}
+		window.location.href="Management.jsp";
 	}else{
 		alert("请先登录！");
 	}

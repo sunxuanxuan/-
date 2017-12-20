@@ -45,16 +45,17 @@ public class LoginAction extends ActionSupport implements ModelDriven<Verificati
 		    ActionContext.getContext().put("error","ÕËºÅ»òÃÜÂë´íÎó");
 			return INPUT;
 		}else{
-			ActionContext.getContext().put("user", existUser);
+			ActionContext.getContext().getSession().put("user", existUser);
 			return SUCCESS;
 		}
 	}
 	public String logout(){
+		ActionContext.getContext().getSession().clear();
 		return "logout";
 	}
 	public String register(){
 		String result=loginService.register(verification,name);
-		ActionContext.getContext().put("result", result);
+		ActionContext.getContext().put("result",result);
 		return "register";
 	}
 }

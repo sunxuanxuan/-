@@ -196,4 +196,12 @@ public class ManageDaoImpl extends HibernateDaoSupport implements ManageDao {
 		return list;
 	}
 
+	@Override
+	public List<Operationlog> getLog() {
+		// TODO Auto-generated method stub
+		String sql="from Operationlog";
+		List<Operationlog> list=this.getHibernateTemplate().find(sql);
+		return list;
+	}
+
 }

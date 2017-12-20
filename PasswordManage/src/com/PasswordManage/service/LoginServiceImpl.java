@@ -1,11 +1,13 @@
 package com.PasswordManage.service;
 
 import org.apache.commons.lang3.ObjectUtils.Null;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.PasswordManage.dao.LoginDao;
 import com.PasswordManage.domain.Pm_user;
 import com.PasswordManage.domain.Verification;
 
+@Transactional
 public class LoginServiceImpl implements LoginService {
     
 	private LoginDao loginDao;

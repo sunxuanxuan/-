@@ -26,4 +26,6 @@ public interface ManageService {
 
 	Map<String,Object> query(String q_ip_address, String q_item_name, String q_password_status, String q_username,String q_type2);
 
+	void log_dl();
+
 }

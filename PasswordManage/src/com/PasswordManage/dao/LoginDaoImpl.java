@@ -1,25 +1,35 @@
 package com.PasswordManage.dao;
 
-import java.awt.image.PackedColorModel;
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
+import com.PasswordManage.MD5.MD5Util;
 import com.PasswordManage.domain.Jurisdiction;
 import com.PasswordManage.domain.Pm_user;
 import com.PasswordManage.domain.Verification;
 
-import net.sf.json.JSONObject;
 
 public class LoginDaoImpl extends HibernateDaoSupport implements LoginDao {
 
 	@Override
 	public Pm_user findDao(Verification verification) {
 		// TODO Auto-generated method stub
-		
+		String newpw=verification.getPassword();
+		//MD5√‹¬Î◊™ªª
+		try {
+			newpw=MD5Util.getMD5(verification.getPassword());
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		//√‹¬Î≤È’“
 		String sql="from Pm_user where account=? and password=?";
-		List list=this.getHibernateTemplate().find(sql,verification.getAccount(),verification.getPassword());
+		List list=this.getHibernateTemplate().find(sql,verification.getAccount(),newpw);
 		if(list.size()>0){
 			return (Pm_user)list.get(0);
 		}else{
@@ -30,6 +40,7 @@ public class LoginDaoImpl extends HibernateDaoSupport implements LoginDao {
 	@Override
 	public String addUser(Verification verification, String name) {
 		// TODO Auto-generated method stub
+		String newpw=verification.getPassword();
 		
 		Pm_user pm_user=new Pm_user();
 		String sql="from Pm_user where account=?";
@@ -37,8 +48,17 @@ public class LoginDaoImpl extends HibernateDaoSupport implements LoginDao {
 		if(list.size()>0){
 			return "register_failed";
 		}else{
+			//MD5º”√‹
+			try {
+				newpw=MD5Util.getMD5(verification.getPassword());
+			} catch (NoSuchAlgorithmException e) {
+				e.printStackTrace();
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+			//¥¢¥Ê
 		pm_user.setAccount(verification.getAccount());
-		pm_user.setPassword(verification.getPassword());
+		pm_user.setPassword(newpw);
 		pm_user.setName(name);
 		Date date=new Date();
 		pm_user.setRegister_date(date);
