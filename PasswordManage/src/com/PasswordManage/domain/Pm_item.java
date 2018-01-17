@@ -1,26 +1,20 @@
 package com.PasswordManage.domain;
 
 import java.util.Date;
-import java.util.UUID;
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import org.hibernate.annotations.GenericGenerator;
 /**
  * 
- * Éú³ÉÓ³ÉäÎÄ¼şÊ±×¢ÒâÀÁ¼ÓÔØÎÊÌâ£»
+ * ç”Ÿæˆæ˜ å°„æ–‡ä»¶æ—¶æ³¨æ„æ‡’åŠ è½½é—®é¢˜ï¼›
  *
  */
 public class Pm_item {
 
 	private String id;
-	private String type1;//Ö÷»ú»òÊı¾İ¿â;
-	private String username;//ÓÃ»§Ãû;
+	private String type1;//ä¸»æœºæˆ–æ•°æ®åº“;
+	private String username;//ç”¨æˆ·å;
 	private String password;
-	private Date create_date;//¼ÇÂ¼´´½¨Ê±¼ä;
-	private Date password_expired_date;//ÃÜÂëµ½ÆÚÊ±¼ä;
-	private String type2;//Ö÷»úÀàĞÍ»òÕßÊı¾İ¿âÀàĞÍ;
+	private Date create_date;//è®°å½•åˆ›å»ºæ—¶é—´;
+	private Date password_expired_date;//å¯†ç åˆ°æœŸæ—¶é—´;
+	private String type2;//ä¸»æœºç±»å‹æˆ–è€…æ•°æ®åº“ç±»å‹;
 	private int password_lifelength;
 	private String password_status;
 	private String item_name;
